@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign, ArrowUpRight, ArrowDownRight, Wallet, Calendar, ShieldCheck } from 'lucide-react';
+import { Wallet, Calendar, ShieldCheck, ArrowUpRight, Plus, ArrowDownRight } from 'lucide-react';
 
-const monthlyData = [
+const initialMonthlyData = [
   { name: 'Jan', Saldo: 1200, Economias: 300 },
   { name: 'Fev', Saldo: 1800, Economias: 500 },
   { name: 'Mar', Saldo: 2400, Economias: 800 },
@@ -35,7 +35,67 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function DashboardMockup() {
   const [timeframe, setTimeframe] = useState('monthly');
-  const data = timeframe === 'monthly' ? monthlyData : yearlyData;
+  const [chartData, setChartData] = useState(initialMonthlyData);
+  const [transactions, setTransactions] = useState([
+    { category: 'Salário Principal', date: 'Hoje', val: 7500, type: 'in', color: '#10b981' },
+    { category: 'Supermercado CompreBem', date: 'Ontem', val: -412.50, type: 'out', color: '#ef4444' },
+    { category: 'Aporte de Investimentos', date: '08 de Jun', val: -1000, type: 'out', color: '#f59e0b' },
+  ]);
+
+  // Form State
+  const [desc, setDesc] = useState('');
+  const [val, setVal] = useState('');
+  const [type, setType] = useState('out'); // in / out
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [notification, setNotification] = useState('');
+
+  const handleAddTransaction = (e) => {
+    e.preventDefault();
+    if (!desc || !val) return;
+
+    const numericVal = parseFloat(val);
+    if (isNaN(numericVal)) return;
+
+    const actualVal = type === 'in' ? numericVal : -numericVal;
+    const color = type === 'in' ? '#10b981' : '#ef4444';
+
+    const newTx = {
+      category: desc,
+      date: 'Hoje',
+      val: actualVal,
+      type,
+      color
+    };
+
+    // Update Transaction list
+    setTransactions(prev => [newTx, ...prev]);
+
+    // Recalculate Balance for June
+    if (timeframe === 'monthly') {
+      setChartData(prev => {
+        const updated = [...prev];
+        const lastIdx = updated.length - 1;
+        updated[lastIdx] = {
+          ...updated[lastIdx],
+          Saldo: updated[lastIdx].Saldo + actualVal,
+          Economias: type === 'in' 
+            ? updated[lastIdx].Economias + (actualVal * 0.3)
+            : updated[lastIdx].Economias
+        };
+        return updated;
+      });
+    }
+
+    setDesc('');
+    setVal('');
+    setShowAddForm(false);
+    setNotification('Lançamento adicionado!');
+    setTimeout(() => setNotification(''), 3000);
+  };
+
+  // Compute values
+  const currentJuneBalance = timeframe === 'monthly' ? chartData[chartData.length - 1].Saldo : 78000;
+  const currentJuneSavings = timeframe === 'monthly' ? chartData[chartData.length - 1].Economias : 35000;
 
   return (
     <div style={{
@@ -59,36 +119,16 @@ export default function DashboardMockup() {
         paddingBottom: '16px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            backgroundColor: '#ef4444'
-          }} />
-          <div style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            backgroundColor: '#eab308'
-          }} />
-          <div style={{
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            backgroundColor: '#22c55e'
-          }} />
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ef4444' }} />
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#eab308' }} />
+          <div style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#22c55e' }} />
           <span style={{ fontSize: '0.8rem', color: '#94a3b8', marginLeft: '12px', fontWeight: 600 }}>
-            Dinheiro no Controle™ - Dashboard do Sistema
+            Painel Interativo Dinheiro no Controle™
           </span>
         </div>
         
         {/* Timeframe Toggle */}
-        <div style={{
-          display: 'flex',
-          backgroundColor: '#1e293b',
-          padding: '4px',
-          borderRadius: '8px'
-        }}>
+        <div style={{ display: 'flex', backgroundColor: '#1e293b', padding: '4px', borderRadius: '8px' }}>
           <button 
             onClick={() => setTimeframe('monthly')}
             style={{
@@ -124,28 +164,40 @@ export default function DashboardMockup() {
         </div>
       </div>
 
+      {/* Notification Toast */}
+      {notification && (
+        <div style={{
+          backgroundColor: '#10b981',
+          color: '#fff',
+          padding: '8px 16px',
+          borderRadius: '8px',
+          fontSize: '0.8rem',
+          fontWeight: 700,
+          textAlign: 'center',
+          marginBottom: '16px',
+          animation: 'pulseGlow 1.5s infinite'
+        }}>
+          ✓ {notification}
+        </div>
+      )}
+
       {/* KPI Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(2, 1fr)',
-        gap: '16px',
-        marginBottom: '24px'
-      }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginBottom: '24px' }}>
         <div style={{
           background: 'rgba(255, 255, 255, 0.03)',
           border: '1px solid rgba(255, 255, 255, 0.05)',
           borderRadius: '12px',
           padding: '16px',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Saldo Total</span>
+          <div style={{ display: 'flex', justifyView: 'space-between', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Saldo Atual</span>
             <Wallet size={16} style={{ color: '#10b981' }} />
           </div>
           <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
-            R$ {timeframe === 'monthly' ? '4.750,00' : '78.000,00'}
+            R$ {currentJuneBalance.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
           <span style={{ fontSize: '0.7rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
-            <ArrowUpRight size={12} /> +12% este mês
+            <ArrowUpRight size={12} /> Saldo ativo simulado
           </span>
         </div>
 
@@ -156,27 +208,22 @@ export default function DashboardMockup() {
           padding: '16px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Economizado</span>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Economias acumuladas</span>
             <ShieldCheck size={16} style={{ color: '#f59e0b' }} />
           </div>
           <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
-            R$ {timeframe === 'monthly' ? '1.800,00' : '35.000,00'}
+            R$ {currentJuneSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
           <span style={{ fontSize: '0.7rem', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
-            Meta de 40% atingida!
+            Economias estimadas
           </span>
         </div>
       </div>
 
       {/* Main Chart Area */}
-      <div style={{
-        height: '200px',
-        width: '100%',
-        marginBottom: '24px',
-        position: 'relative'
-      }}>
+      <div style={{ height: '180px', width: '100%', marginBottom: '24px', position: 'relative' }}>
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+          <AreaChart data={timeframe === 'monthly' ? chartData : yearlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorSaldo" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
@@ -197,17 +244,120 @@ export default function DashboardMockup() {
         </ResponsiveContainer>
       </div>
 
-      {/* Recent Transactions List */}
+      {/* Recent Transactions List with Interactive Adder */}
       <div>
-        <h4 style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Transações Recentes
-        </h4>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+          <h4 style={{ fontSize: '0.85rem', color: '#94a3b8', margin: 0, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Lançamentos Recentes
+          </h4>
+          <button 
+            onClick={() => setShowAddForm(!showAddForm)}
+            style={{
+              background: 'rgba(16, 185, 129, 0.1)',
+              border: 'none',
+              borderRadius: '6px',
+              color: '#10b981',
+              padding: '4px 10px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <Plus size={12} /> {showAddForm ? 'Fechar' : 'Lançar'}
+          </button>
+        </div>
+
+        {/* Add Lançamento Form */}
+        {showAddForm && (
+          <form onSubmit={handleAddTransaction} style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            borderRadius: '10px',
+            padding: '16px',
+            marginBottom: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                placeholder="Descrição (ex: Delivery, Cinema)" 
+                value={desc}
+                onChange={e => setDesc(e.target.value)}
+                required
+                style={{
+                  flexGrow: 2,
+                  backgroundColor: '#1e293b',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  padding: '8px 12px',
+                  fontSize: '0.8rem',
+                  outline: 'none'
+                }}
+              />
+              <input 
+                type="number" 
+                placeholder="Valor (R$)" 
+                value={val}
+                onChange={e => setVal(e.target.value)}
+                required
+                style={{
+                  flexGrow: 1,
+                  width: '90px',
+                  backgroundColor: '#1e293b',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '6px',
+                  color: '#fff',
+                  padding: '8px 12px',
+                  fontSize: '0.8rem',
+                  outline: 'none'
+                }}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                  <input 
+                    type="radio" 
+                    name="txType" 
+                    checked={type === 'out'} 
+                    onChange={() => setType('out')} 
+                  /> Despesa (-)
+                </label>
+                <label style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                  <input 
+                    type="radio" 
+                    name="txType" 
+                    checked={type === 'in'} 
+                    onChange={() => setType('in')} 
+                  /> Receita (+)
+                </label>
+              </div>
+              <button type="submit" style={{
+                backgroundColor: '#10b981',
+                border: 'none',
+                color: '#fff',
+                padding: '6px 16px',
+                borderRadius: '6px',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                cursor: 'pointer'
+              }}>
+                Confirmar
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Transactions List */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {[
-            { category: 'Salário Principal', date: 'Hoje', val: '+R$ 7.500,00', type: 'in', color: '#10b981' },
-            { category: 'Supermercado CompreBem', date: 'Ontem', val: '-R$ 412,50', type: 'out', color: '#ef4444' },
-            { category: 'Aporte de Investimentos', date: '08 de Jun', val: '-R$ 1.000,00', type: 'out', color: '#f59e0b' },
-          ].map((t, idx) => (
+          {transactions.map((t, idx) => (
             <div key={idx} style={{
               display: 'flex',
               justifyContent: 'space-between',
@@ -225,7 +375,7 @@ export default function DashboardMockup() {
                 </div>
               </div>
               <div style={{ fontWeight: 700, color: t.color }}>
-                {t.val}
+                {t.val > 0 ? '+' : ''}R$ {Math.abs(t.val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
             </div>
           ))}

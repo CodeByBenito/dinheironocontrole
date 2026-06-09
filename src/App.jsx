@@ -19,11 +19,15 @@ import {
   ArrowRight,
   Star,
   Lock,
-  MessageSquare,
   Percent,
   Clock,
-  ArrowUpRight
+  ArrowUpRight,
+  CreditCard,
+  QrCode,
+  CheckCircle,
+  AlertCircle
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import DashboardMockup from './components/DashboardMockup';
 import AIConsultantMockup from './components/AIConsultantMockup';
 
@@ -36,6 +40,17 @@ export default function App() {
   
   const [activeFaq, setActiveFaq] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Checkout Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('pix'); // pix or card
+  const [cardName, setCardName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [paymentStep, setPaymentStep] = useState('form'); // form -> processing -> success
 
   // Prices
   const basePrice = 47;
@@ -61,20 +76,26 @@ export default function App() {
     setActiveFaq(activeFaq === idx ? null : idx);
   };
 
-  const handleCheckout = () => {
-    const selectedBumps = [];
-    if (bumps.casal) selectedBumps.push('casal_familia');
-    if (bumps.mei) selectedBumps.push('autonomo_mei');
-    if (bumps.crm) selectedBumps.push('crm_signature_3m');
-    
-    const query = new URLSearchParams({
-      prod: 'dinheiro_no_controle',
-      price: total.toString(),
-      bumps: selectedBumps.join(',')
-    }).toString();
+  // Open Checkout Modal instead of opening blank tab
+  const handleOpenCheckout = () => {
+    setPaymentStep('form');
+    setShowModal(true);
+  };
 
-    // Opening mock checkout url
-    window.open(`https://checkout.pagamento-seguro.com/pay?${query}`, '_blank');
+  const handleProcessPayment = (e) => {
+    e.preventDefault();
+    setPaymentStep('processing');
+    
+    // Simulate API call
+    setTimeout(() => {
+      setPaymentStep('success');
+      // Confetti burst
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
+    }, 2000);
   };
 
   const scrollToSection = (id) => {
@@ -105,9 +126,9 @@ export default function App() {
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <button 
-              onClick={() => scrollToSection('checkout')}
+              onClick={handleOpenCheckout}
               className="btn btn-primary nav-btn"
-              style={{ display: 'none', display: 'md-inline-flex' }}
+              style={{ padding: '10px 20px', fontSize: '0.85rem' }}
             >
               Comprar Agora (R$ 47)
             </button>
@@ -117,8 +138,7 @@ export default function App() {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: '#0f172a',
-                display: 'block'
+                color: '#0f172a'
               }}
               className="mobile-menu-toggle"
             >
@@ -150,11 +170,11 @@ export default function App() {
             <a href="#depoimentos" onClick={(e) => { e.preventDefault(); scrollToSection('depoimentos'); }} style={{ fontWeight: 600 }}>Depoimentos</a>
             <a href="#faq" onClick={(e) => { e.preventDefault(); scrollToSection('faq'); }} style={{ fontWeight: 600 }}>FAQ</a>
             <button 
-              onClick={() => scrollToSection('checkout')}
+              onClick={handleOpenCheckout}
               className="btn btn-primary"
               style={{ width: '100%', marginTop: '8px' }}
             >
-              Garantir Minha Vaga
+              Garantir Minha Vaga (R$ 47)
             </button>
           </div>
         )}
@@ -164,17 +184,22 @@ export default function App() {
       <section className="section-alt" style={{ overflow: 'hidden' }}>
         <div className="container hero-wrapper">
           <div className="hero-content">
-            <div className="hero-badge">
-              <Sparkles size={16} /> O Sistema Financeiro Definitivo para Iniciantes
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }} className="hero-badges-container">
+              <div className="hero-badge">
+                <Sparkles size={14} /> Sistema Financeiro Inteligente
+              </div>
+              <div className="hero-badge" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', color: '#d97706', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
+                🛡️ Garantia de 7 Dias Inclusa
+              </div>
             </div>
-            <h1 className="hero-title">
+            <h1 className="hero-title" style={{ marginTop: '12px' }}>
               Chega de ver o seu dinheiro <span>sumir</span> todo final de mês.
             </h1>
             <p className="hero-description">
-              Transforme o caos financeiro em clareza absoluta com o <strong>Dinheiro no Controle™</strong>. Um ecossistema prático com dashboard inteligente, metas visuais e consultoria de IA para guiar seus passos diários.
+              Transforme o caos financeiro em clareza absoluta com o <strong>Dinheiro no Controle™</strong>. Um ecossistema interativo com painéis, planejamento de metas visuais e consultoria de IA integrada. <strong>Teste sem riscos por 7 dias.</strong>
             </p>
             <div className="hero-ctas">
-              <button onClick={() => scrollToSection('checkout')} className="btn btn-primary">
+              <button onClick={handleOpenCheckout} className="btn btn-primary">
                 QUERO ASSUMIR O CONTROLE DO MEU DINHEIRO <ArrowRight size={18} />
               </button>
               <button onClick={() => scrollToSection('solucao')} className="btn btn-secondary">
@@ -184,17 +209,13 @@ export default function App() {
             <div className="trust-indicators">
               <div className="trust-item">
                 <div className="trust-stars">
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
-                  <Star size={16} fill="currentColor" />
+                  <Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" /><Star size={14} fill="currentColor" />
                 </div>
                 <span>+12.500 Vidas Controladas</span>
               </div>
               <div className="trust-item">
                 <ShieldCheck size={18} style={{ color: '#10b981' }} />
-                <span>Garantia Incondicional de 7 dias</span>
+                <span>Garantia de Satisfação de 7 dias</span>
               </div>
             </div>
           </div>
@@ -298,8 +319,8 @@ export default function App() {
                     <Check size={18} />
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '4px' }}>Integração Premium com CRM</h4>
-                    <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Pronto para expandir para controle profissional se você tiver um negócio.</p>
+                    <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '4px' }}>Compra Protegida e Risco Zero</h4>
+                    <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Acesso coberto por garantia de reembolso total nos primeiros 7 dias.</p>
                   </div>
                 </div>
               </div>
@@ -349,12 +370,12 @@ export default function App() {
               <div className="card-icon" style={{ backgroundColor: '#fef3c7', color: '#f59e0b' }}>
                 <Sparkles size={24} />
               </div>
-              <h3 className="card-title">Consultor de IA</h3>
+              <h3 className="card-title">Consultor de IA Interativo</h3>
               <p className="card-description">
-                Tenha um consultor financeiro particular disponível 24 horas por dia. Faça perguntas sobre corte de gastos e investimentos e receba respostas personalizadas baseadas nos seus padrões.
+                Tenha um consultor financeiro particular disponível 24 horas por dia. Faça perguntas sobre corte de despesas ou metas clicando nas bolhas interativas e receba respostas instantâneas na tela.
               </p>
               <div style={{ marginTop: '16px', fontSize: '0.8rem', color: '#b45309', fontWeight: 600 }}>
-                💡 Sugere cortes automáticos
+                💡 Respostas baseadas em padrões reais
               </div>
             </div>
 
@@ -424,7 +445,7 @@ export default function App() {
               <div className="step-number">1</div>
               <h3 style={{ fontSize: '1.25rem', marginBottom: '12px' }}>Alimente o Sistema</h3>
               <p style={{ fontSize: '0.95rem', color: '#64748b' }}>
-                Registre suas receitas e gastos mensais de forma simples e guiada. Leva menos de 5 minutos e pode ser feito pelo celular.
+                Registre suas receitas e gastos de forma simples. Experimente fazer um lançamento de teste clicando em "Lançar" no nosso dashboard interativo no topo.
               </p>
             </div>
 
@@ -562,7 +583,10 @@ export default function App() {
               <div className="stack-price-installment">
                 Ou em até 5x de R$ 10,15 no cartão de crédito
               </div>
-              <button onClick={() => scrollToSection('checkout')} className="btn btn-primary btn-block">
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', color: '#d97706', fontSize: '0.85rem', fontWeight: 700, marginBottom: '16px' }}>
+                🛡️ Garantia Blindada de Satisfação de 7 dias inclusa!
+              </div>
+              <button onClick={handleOpenCheckout} className="btn btn-primary btn-block">
                 QUERO MEU ACESSO AGORA COM DESCONTO
               </button>
             </div>
@@ -681,6 +705,9 @@ export default function App() {
               <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
                 Acesso vitalício ao sistema completo com painéis, calculadoras, consultor financeiro de IA e atualizações gratuitas inclusas.
               </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#d97706', marginTop: '12px', fontWeight: 700 }}>
+                🛡️ Garantia incondicional de reembolso por 7 dias
+              </div>
             </div>
 
             {/* Bumps Grid Container */}
@@ -777,11 +804,11 @@ export default function App() {
               </div>
 
               <div style={{ marginTop: '24px' }}>
-                <button onClick={handleCheckout} className="btn btn-primary btn-block" style={{ padding: '20px', fontSize: '1.15rem' }}>
+                <button onClick={handleOpenCheckout} className="btn btn-primary btn-block" style={{ padding: '20px', fontSize: '1.15rem' }}>
                   QUERO ASSUMIR O CONTROLE DO MEU DINHEIRO POR R$ {total.toFixed(2).replace('.', ',')}
                 </button>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', justifyContent: 'center', marginTop: '16px', fontSize: '0.8rem', color: '#64748b' }}>
-                  <Lock size={14} /> Seus dados estão 100% criptografados e protegidos por protocolo SSL.
+                  <Lock size={14} /> Compra protegida por garantia de reembolso total por 7 dias.
                 </div>
               </div>
             </div>
@@ -789,17 +816,46 @@ export default function App() {
         </div>
       </section>
 
-      {/* SECTION 11 — GUARANTEE */}
-      <section>
+      {/* SECTION 11 — GUARANTEE (Restyled with Premium Golden Circular Badge) */}
+      <section style={{ background: '#fff' }}>
         <div className="container">
-          <div className="guarantee-box">
-            <ShieldCheck size={80} style={{ color: '#10b981', flexShrink: 0 }} />
+          <div className="guarantee-box" style={{
+            border: '2px solid #f59e0b',
+            background: 'linear-gradient(135deg, #ffffff 0%, #fffbeb 100%)',
+            boxShadow: '0 20px 40px -15px rgba(245, 158, 11, 0.12)',
+            borderRadius: '24px',
+            padding: '48px 32px'
+          }}>
+            {/* Circular Gold Badge (Custom SVG) */}
+            <div style={{ position: 'relative', width: '120px', height: '120px', flexShrink: 0 }}>
+              <svg viewBox="0 0 100 100" width="120" height="120">
+                <defs>
+                  <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fbbf24" />
+                    <stop offset="50%" stopColor="#f59e0b" />
+                    <stop offset="100%" stopColor="#d97706" />
+                  </linearGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="url(#goldGradient)" stroke="#b45309" strokeWidth="2" />
+                <circle cx="50" cy="50" r="38" fill="none" stroke="#fff" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
+                <path d="M50 20 L58 38 L78 38 L62 50 L68 70 L50 58 L32 70 L38 50 L22 38 L42 38 Z" fill="#fff" />
+                <text x="50" y="80" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="800" fontFamily="sans-serif">
+                  7 DIAS
+                </text>
+                <text x="50" y="15" textAnchor="middle" fill="#5b21b6" fontSize="6" fontWeight="800" fontFamily="sans-serif" letterSpacing="0.5">
+                  GARANTIA
+                </text>
+              </svg>
+            </div>
+            
             <div className="guarantee-content">
-              <h3>Garantia Blindada de Satisfação: Risco Zero</h3>
+              <h3 style={{ color: '#b45309', fontWeight: 800, fontSize: '1.6rem', marginBottom: '12px' }}>
+                Garantia Blindada de Satisfação: Risco Zero por 7 Dias
+              </h3>
               <p style={{ fontSize: '1.05rem', lineHeight: '1.7', color: '#475569' }}>
                 Nós confiamos tanto na eficiência do método e do sistema <strong>Dinheiro no Controle™</strong> que oferecemos uma garantia incondicional de <strong>7 dias</strong>. 
                 <br /><br />
-                Use o sistema, cadastre suas contas, teste o consultor de IA e a integração com o CRM. Se por qualquer motivo você achar que não serve para você ou que não te ajudou a economizar, basta nos enviar um único e-mail e devolveremos 100% do seu dinheiro investido. Sem burocracia, sem letras miúdas.
+                Use o sistema, cadastre suas contas, teste o consultor de IA e a integração com o CRM. Se por qualquer motivo você achar que não serve para você ou que não te ajudou a economizar, basta nos enviar um único e-mail e devolveremos 100% do seu dinheiro investido. Sem burocracia, sem perguntas.
               </p>
             </div>
           </div>
@@ -825,7 +881,7 @@ export default function App() {
               },
               {
                 q: 'Funciona no celular ou tablet?',
-                a: 'Sim, a ferramenta é totalmente responsiva e funciona perfeitamente em qualquer dispositivo (Smartphone iOS, Android, Tablets, Notebook ou Computador) diretamente no seu navegador, sem precisar instalar aplicativos pesados.'
+                a: 'Sim, a ferramenta é totalmente responsiva e funciona perfeitamente em qualquer dispositivo (Smartphone iOS, Android, Tablets, Notebook ou Computador) diretamente no seu navegador, sem precisar instalar aplicativos.'
               },
               {
                 q: 'O CRM Signature é obrigatório?',
@@ -857,7 +913,7 @@ export default function App() {
               },
               {
                 q: 'Como funciona a garantia de reembolso?',
-                a: 'Você tem 7 dias inteiros para testar o sistema. Se decidir cancelar, basta acessar o link de reembolso que enviamos junto no e-mail de ativação ou nos mandar uma mensagem no e-mail de suporte. Processamos a devolução do dinheiro imediatamente.'
+                a: 'Você tem 7 dias inteiros de garantia. Se decidir cancelar, basta acessar o link de reembolso que enviamos junto no e-mail de ativação ou nos mandar uma mensagem no e-mail de suporte. Processamos a devolução do dinheiro imediatamente.'
               }
             ].map((faq, idx) => (
               <div key={idx} className={`faq-item ${activeFaq === idx ? 'active' : ''}`}>
@@ -887,7 +943,7 @@ export default function App() {
                 Por apenas R$ 47,00 (menos que o valor de uma pizza), você troca a incerteza e a ansiedade bancária diária pela paz de espírito de um orçamento totalmente sob seu controle.
               </p>
               <button 
-                onClick={() => scrollToSection('checkout')} 
+                onClick={handleOpenCheckout} 
                 className="btn btn-primary"
                 style={{ padding: '20px 40px', fontSize: '1.2rem', boxShadow: '0 20px 40px rgba(16, 185, 129, 0.3)' }}
               >
@@ -896,7 +952,7 @@ export default function App() {
               <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '24px', fontSize: '0.85rem', color: '#94a3b8' }}>
                 <span>🔒 Compra 100% Protegida</span>
                 <span>•</span>
-                <span>🛡️ Garantia de 7 Dias</span>
+                <span>🛡️ Garantia Incondicional de 7 Dias</span>
                 <span>•</span>
                 <span>⚡ Acesso Imediato</span>
               </div>
@@ -929,10 +985,300 @@ export default function App() {
           <span className="sticky-tag">Dinheiro no Controle</span>
           <span className="sticky-price">R$ {total.toFixed(2).replace('.', ',')}</span>
         </div>
-        <button onClick={() => scrollToSection('checkout')} className="btn btn-primary sticky-btn">
+        <button onClick={handleOpenCheckout} className="btn btn-primary sticky-btn">
           Comprar Agora
         </button>
       </div>
+
+      {/* INTERACTIVE CHECKOUT MODAL */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-box" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowModal(false)}>
+              <X size={20} />
+            </button>
+            
+            {paymentStep === 'form' && (
+              <>
+                <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#10b981', fontSize: '0.8rem', fontWeight: 800, textTransform: 'uppercase', marginBottom: '8px' }}>
+                    <Lock size={12} /> Checkout 100% Seguro e Criptografado
+                  </div>
+                  <h3 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>Finalizar sua Inscrição</h3>
+                  <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '4px' }}>
+                    Dinheiro no Controle™ + {Object.values(bumps).filter(Boolean).length} Oferta(s) Selecionada(s)
+                  </p>
+                </div>
+
+                {/* Fictional Order Summary */}
+                <div style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '12px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '8px' }}>
+                    <span>Dinheiro no Controle™ Vitalício</span>
+                    <strong>R$ 47,00</strong>
+                  </div>
+                  {bumps.casal && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#059669', marginBottom: '8px' }}>
+                      <span>+ Versão Casal / Família</span>
+                      <strong>R$ 19,00</strong>
+                    </div>
+                  )}
+                  {bumps.mei && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#059669', marginBottom: '8px' }}>
+                      <span>+ Versão Autônomo / MEI</span>
+                      <strong>R$ 27,00</strong>
+                    </div>
+                  )}
+                  {bumps.crm && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', color: '#b45309', marginBottom: '8px' }}>
+                      <span>+ Acesso CRM Signature (3 Meses)</span>
+                      <strong>R$ 29,00</strong>
+                    </div>
+                  )}
+                  <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '1.1rem', color: '#0f172a' }}>
+                    <span>Total a Pagar:</span>
+                    <span style={{ color: '#10b981' }}>R$ {total.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.75rem', color: '#d97706', marginTop: '12px', fontWeight: 700 }}>
+                    🛡️ Compra protegida por garantia incondicional de 7 dias.
+                  </div>
+                </div>
+
+                {/* Payment Method Selector */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+                  <button 
+                    onClick={() => setPaymentMethod('pix')}
+                    type="button"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: paymentMethod === 'pix' ? '2px solid #10b981' : '1px solid #e2e8f0',
+                      backgroundColor: paymentMethod === 'pix' ? 'rgba(16, 185, 129, 0.05)' : '#fff',
+                      cursor: 'pointer',
+                      fontWeight: 700,
+                      color: paymentMethod === 'pix' ? '#10b981' : '#475569',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <QrCode size={18} /> PIX (Aprovação Instantânea)
+                  </button>
+                  <button 
+                    onClick={() => setPaymentMethod('card')}
+                    type="button"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: paymentMethod === 'card' ? '2px solid #10b981' : '1px solid #e2e8f0',
+                      backgroundColor: paymentMethod === 'card' ? 'rgba(16, 185, 129, 0.05)' : '#fff',
+                      cursor: 'pointer',
+                      fontWeight: 700,
+                      color: paymentMethod === 'card' ? '#10b981' : '#475569',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    <CreditCard size={18} /> Cartão de Crédito
+                  </button>
+                </div>
+
+                {/* Fictional Payment Form */}
+                <form onSubmit={handleProcessPayment} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Nome Completo</label>
+                    <input 
+                      type="text" 
+                      placeholder="Nome impresso ou comprador" 
+                      value={userName} 
+                      onChange={e => setUserName(e.target.value)} 
+                      required 
+                      style={{
+                        padding: '10px 14px',
+                        borderRadius: '6px',
+                        border: '1px solid #e2e8f0',
+                        fontSize: '0.85rem',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>E-mail para Acesso</label>
+                    <input 
+                      type="email" 
+                      placeholder="seuemail@exemplo.com" 
+                      value={userEmail} 
+                      onChange={e => setUserEmail(e.target.value)} 
+                      required 
+                      style={{
+                        padding: '10px 14px',
+                        borderRadius: '6px',
+                        border: '1px solid #e2e8f0',
+                        fontSize: '0.85rem',
+                        outline: 'none'
+                      }}
+                    />
+                  </div>
+
+                  {paymentMethod === 'card' && (
+                    <>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Número do Cartão</label>
+                        <input 
+                          type="text" 
+                          placeholder="4444 4444 4444 4444" 
+                          value={cardNumber} 
+                          onChange={e => setCardNumber(e.target.value)} 
+                          required 
+                          style={{
+                            padding: '10px 14px',
+                            borderRadius: '6px',
+                            border: '1px solid #e2e8f0',
+                            fontSize: '0.85rem',
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>Validade</label>
+                          <input 
+                            type="text" 
+                            placeholder="MM/AA" 
+                            value={cardExpiry} 
+                            onChange={e => setCardExpiry(e.target.value)} 
+                            required 
+                            style={{
+                              padding: '10px 14px',
+                              borderRadius: '6px',
+                              border: '1px solid #e2e8f0',
+                              fontSize: '0.85rem',
+                              outline: 'none'
+                            }}
+                          />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                          <label style={{ fontSize: '0.75rem', fontWeight: 700, color: '#334155' }}>CVV</label>
+                          <input 
+                            type="password" 
+                            placeholder="123" 
+                            value={cardCvv} 
+                            onChange={e => setCardCvv(e.target.value)} 
+                            required 
+                            style={{
+                              padding: '10px 14px',
+                              borderRadius: '6px',
+                              border: '1px solid #e2e8f0',
+                              fontSize: '0.85rem',
+                              outline: 'none'
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {paymentMethod === 'pix' && (
+                    <div style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '16px',
+                      backgroundColor: '#f0fdf4',
+                      border: '1px dashed #10b981',
+                      borderRadius: '8px',
+                      textAlign: 'center',
+                      fontSize: '0.8rem',
+                      color: '#166534'
+                    }}>
+                      <QrCode size={48} style={{ marginBottom: '8px', color: '#10b981' }} />
+                      <strong>Chave PIX e QR Code serão exibidos no próximo passo.</strong>
+                      <p style={{ marginTop: '4px', fontSize: '0.75rem', color: '#64748b' }}>
+                        Basta preencher seu nome e email acima para gerar a transação segura.
+                      </p>
+                    </div>
+                  )}
+
+                  <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '12px', padding: '14px' }}>
+                    FINALIZAR PAGAMENTO DE R$ {total.toFixed(2).replace('.', ',')}
+                  </button>
+                </form>
+              </>
+            )}
+
+            {paymentStep === 'processing' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px 20px', textAlign: 'center' }}>
+                <div style={{
+                  width: '56px',
+                  height: '56px',
+                  border: '4px solid #f1f5f9',
+                  borderTopColor: '#10b981',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite',
+                  marginBottom: '24px'
+                }} />
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>Processando sua transação...</h3>
+                <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '8px' }}>
+                  Comunicação criptografada com servidores de pagamento seguros. Por favor, aguarde.
+                </p>
+              </div>
+            )}
+
+            {paymentStep === 'success' && (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '48px 20px', textAlign: 'center' }}>
+                <div style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  backgroundColor: '#d1fae5',
+                  color: '#10b981',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: '24px',
+                  boxShadow: '0 0 20px rgba(16, 185, 129, 0.2)'
+                }}>
+                  <CheckCircle size={32} />
+                </div>
+                <h3 style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0f172a' }}>Compra Aprovada! 🎉</h3>
+                <p style={{ fontSize: '0.95rem', color: '#475569', marginTop: '12px', maxWidth: '400px', lineHeight: '1.6' }}>
+                  Parabéns, <strong>{userName}</strong>! Seu pagamento de <strong>R$ {total.toFixed(2).replace('.', ',')}</strong> foi confirmado.
+                </p>
+                <div style={{
+                  backgroundColor: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  width: '100%',
+                  marginTop: '24px',
+                  textAlign: 'left',
+                  fontSize: '0.85rem'
+                }}>
+                  <p style={{ fontWeight: 700, color: '#0f172a', marginBottom: '8px' }}>Próximos Passos Importantes:</p>
+                  <ol style={{ paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '6px', color: '#64748b' }}>
+                    <li>Verifique seu e-mail (<strong>{userEmail}</strong>) para obter o link de acesso.</li>
+                    <li>{bumps.crm ? 'Ative seus 3 meses extras de CRM Signature no painel.' : 'Use seu cupom de 14 dias gratuitos de CRM Signature.'}</li>
+                    <li>Siga o guia "Saia do Vermelho em 90 dias" incluso.</li>
+                  </ol>
+                </div>
+                <button 
+                  onClick={() => setShowModal(false)} 
+                  className="btn btn-primary" 
+                  style={{ width: '100%', marginTop: '24px', padding: '12px' }}
+                >
+                  ACESSAR MEU PAINEL AGORA
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   );
 }

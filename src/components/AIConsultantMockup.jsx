@@ -1,7 +1,145 @@
-import React from 'react';
-import { Send, Bot, User, CheckCircle2, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bot, User, CheckCircle2, Send } from 'lucide-react';
+
+const presetConversations = {
+  delivery: {
+    question: 'Como economizar no delivery este mês?',
+    response: (
+      <div>
+        <p style={{ fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
+          Análise de Alimentação Fora de Casa 🍔
+        </p>
+        <p style={{ marginBottom: '8px' }}>
+          Identifiquei um padrão! Despesas com delivery costumam evaporar silenciosamente. Minhas recomendações:
+        </p>
+        <div style={{
+          backgroundColor: '#f1f5f9',
+          padding: '10px',
+          borderRadius: '8px',
+          marginBottom: '10px',
+          borderLeft: '3px solid #10b981'
+        }}>
+          <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <li>Defina um teto semanal de R$ 90 para pedidos.</li>
+            <li>Substitua os outros jantares por compras planejadas de mercado.</li>
+          </ul>
+        </div>
+        <p style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontWeight: 600, fontSize: '0.8rem', margin: 0 }}>
+          <CheckCircle2 size={14} /> Economia esperada: R$ 320,00/mês.
+        </p>
+      </div>
+    )
+  },
+  reserva: {
+    question: 'Como montar minha Reserva de Emergência?',
+    response: (
+      <div>
+        <p style={{ fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
+          Plano de Reserva de Emergência 🛡️
+        </p>
+        <p style={{ marginBottom: '8px' }}>
+          Sua reserva deve cobrir de <strong>3 a 6 meses</strong> de seu custo de vida essencial.
+        </p>
+        <div style={{
+          backgroundColor: '#f1f5f9',
+          padding: '10px',
+          borderRadius: '8px',
+          marginBottom: '10px',
+          borderLeft: '3px solid #f59e0b'
+        }}>
+          <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <li>Calcule seu custo mensal mínimo (ex: R$ 2.500).</li>
+            <li>Meta ideal: R$ 7.500 a R$ 15.000 aplicados em liquidez diária.</li>
+          </ul>
+        </div>
+        <p style={{ fontSize: '0.8rem', margin: 0 }}>
+          No <strong>Dinheiro no Controle™</strong>, crie uma Meta e rastreie os aportes mensais direto no dashboard!
+        </p>
+      </div>
+    )
+  },
+  pfpj: {
+    question: 'Como separar contas Pessoais e Profissionais?',
+    response: (
+      <div>
+        <p style={{ fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
+          Gestão PF vs PJ para Autônomos 💼
+        </p>
+        <p style={{ marginBottom: '8px' }}>
+          Misturar o caixa pessoal e empresarial é a principal causa da mortalidade de pequenas empresas.
+        </p>
+        <div style={{
+          backgroundColor: '#f1f5f9',
+          padding: '10px',
+          borderRadius: '8px',
+          marginBottom: '10px',
+          borderLeft: '3px solid #3b82f6'
+        }}>
+          <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <li>Defina um salário mensal fixo (Pró-labore).</li>
+            <li>Use contas bancárias separadas para pagamentos de clientes e boletos da casa.</li>
+          </ul>
+        </div>
+        <p style={{ fontSize: '0.8rem', margin: 0 }}>
+          💡 Nosso parceiro <strong>CRM Signature</strong> possui módulos de separação perfeitos para gerenciar isso!
+        </p>
+      </div>
+    )
+  }
+};
 
 export default function AIConsultantMockup() {
+  const [messages, setMessages] = useState([
+    {
+      sender: 'bot',
+      content: (
+        <div>
+          Olá! Sou o assistente de inteligência artificial do <strong>Dinheiro no Controle™</strong>. 
+          Como posso te ajudar a organizar seu orçamento e economizar hoje?
+        </div>
+      )
+    }
+  ]);
+  
+  const [isTyping, setIsTyping] = useState(false);
+
+  const handleAskQuestion = (key) => {
+    if (isTyping) return;
+    
+    const convo = presetConversations[key];
+    
+    // Add user message
+    setMessages(prev => [...prev, { sender: 'user', content: convo.question }]);
+    setIsTyping(true);
+  };
+
+  useEffect(() => {
+    if (!isTyping) return;
+
+    // Get the last user message to determine response
+    const lastUserMsg = messages[messages.length - 1]?.content;
+    let matchingKey = null;
+    
+    for (const k in presetConversations) {
+      if (presetConversations[k].question === lastUserMsg) {
+        matchingKey = k;
+        break;
+      }
+    }
+
+    if (matchingKey) {
+      const timer = setTimeout(() => {
+        setMessages(prev => [...prev, {
+          sender: 'bot',
+          content: presetConversations[matchingKey].response
+        }]);
+        setIsTyping(false);
+      }, 1200);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isTyping, messages]);
+
   return (
     <div style={{
       background: '#ffffff',
@@ -38,7 +176,7 @@ export default function AIConsultantMockup() {
           <div>
             <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff', margin: 0 }}>Consultor de IA</h4>
             <span style={{ fontSize: '0.7rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ display: 'inline-block', width: '6px', height: '6px', backgroundColor: '#10b981', borderRadius: '50%' }} /> Online • Respostas instantâneas
+              <span style={{ display: 'inline-block', width: '6px', height: '6px', backgroundColor: '#10b981', borderRadius: '50%' }} /> Online • Interativo
             </span>
           </div>
         </div>
@@ -49,7 +187,7 @@ export default function AIConsultantMockup() {
           borderRadius: '9999px',
           fontWeight: 600
         }}>
-          Beta Premium
+          Simulador Ativo
         </div>
       </div>
 
@@ -60,197 +198,157 @@ export default function AIConsultantMockup() {
         flexDirection: 'column',
         gap: '16px',
         backgroundColor: '#f8fafc',
-        maxHeight: '380px',
+        height: '320px',
         overflowY: 'auto'
       }}>
-        {/* User Message */}
-        <div style={{
-          display: 'flex',
-          gap: '10px',
-          alignSelf: 'flex-end',
-          maxWidth: '85%'
-        }}>
-          <div style={{
-            backgroundColor: '#0f172a',
-            color: '#fff',
-            padding: '12px 16px',
-            borderRadius: '16px 16px 2px 16px',
-            fontSize: '0.85rem',
-          }}>
-            Gastando demais com delivery este mês. Como posso poupar R$ 300 sem sofrer?
-          </div>
-          <div style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '50%',
-            backgroundColor: '#e2e8f0',
+        {messages.map((m, idx) => (
+          <div key={idx} style={{
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0
+            gap: '10px',
+            alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
+            maxWidth: '85%'
           }}>
-            <User size={14} style={{ color: '#0f172a' }} />
-          </div>
-        </div>
-
-        {/* AI Message */}
-        <div style={{
-          display: 'flex',
-          gap: '10px',
-          alignSelf: 'flex-start',
-          maxWidth: '85%'
-        }}>
-          <div style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            border: '1px solid rgba(16, 185, 129, 0.3)'
-          }}>
-            <Bot size={14} style={{ color: '#10b981' }} />
-          </div>
-          <div style={{
-            backgroundColor: '#fff',
-            color: '#334155',
-            padding: '14px 16px',
-            borderRadius: '2px 16px 16px 16px',
-            fontSize: '0.85rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
-          }}>
-            <p style={{ fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
-              Identifiquei um padrão! 🔍
-            </p>
-            <p style={{ marginBottom: '8px' }}>
-              Você gastou <strong>R$ 680,00</strong> em jantares de sexta a domingo no último mês.
-            </p>
+            {m.sender === 'bot' && (
+              <div style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                border: '1px solid rgba(16, 185, 129, 0.3)'
+              }}>
+                <Bot size={14} style={{ color: '#10b981' }} />
+              </div>
+            )}
             <div style={{
-              backgroundColor: '#f1f5f9',
-              padding: '10px',
-              borderRadius: '8px',
-              marginBottom: '10px',
-              borderLeft: '3px solid #10b981'
+              backgroundColor: m.sender === 'user' ? '#0f172a' : '#fff',
+              color: m.sender === 'user' ? '#fff' : '#334155',
+              padding: '12px 16px',
+              borderRadius: m.sender === 'user' ? '16px 16px 2px 16px' : '2px 16px 16px 16px',
+              fontSize: '0.85rem',
+              border: m.sender === 'user' ? 'none' : '1px solid #e2e8f0',
+              boxShadow: m.sender === 'user' ? 'none' : '0 2px 5px rgba(0,0,0,0.02)'
             }}>
-              <p style={{ fontWeight: 600, fontSize: '0.8rem', color: '#0f172a', marginBottom: '4px' }}>Sugestão Prática:</p>
-              <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <li>Limite o delivery para 1x por semana (Teto de R$ 90/semana).</li>
-                <li>Substitua os outros jantares por congelados gourmet caseiros.</li>
-              </ul>
+              {m.content}
             </div>
-            <p style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontWeight: 600, fontSize: '0.8rem' }}>
-              <CheckCircle2 size={14} /> Economia estimada: R$ 320,00/mês.
-            </p>
+            {m.sender === 'user' && (
+              <div style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                backgroundColor: '#e2e8f0',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0
+              }}>
+                <User size={14} style={{ color: '#0f172a' }} />
+              </div>
+            )}
           </div>
-        </div>
+        ))}
 
-        {/* User Message 2 */}
-        <div style={{
-          display: 'flex',
-          gap: '10px',
-          alignSelf: 'flex-end',
-          maxWidth: '85%'
-        }}>
-          <div style={{
-            backgroundColor: '#0f172a',
-            color: '#fff',
-            padding: '12px 16px',
-            borderRadius: '16px 16px 2px 16px',
-            fontSize: '0.85rem',
-          }}>
-            Ótimo! Crie uma meta para esse limite semanal de delivery.
+        {isTyping && (
+          <div style={{ display: 'flex', gap: '10px', alignSelf: 'flex-start' }}>
+            <div style={{
+              width: '28px',
+              height: '28px',
+              borderRadius: '50%',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              border: '1px solid rgba(16, 185, 129, 0.3)'
+            }}>
+              <Bot size={14} style={{ color: '#10b981' }} />
+            </div>
+            <div style={{
+              backgroundColor: '#fff',
+              color: '#94a3b8',
+              padding: '12px 16px',
+              borderRadius: '2px 16px 16px 16px',
+              fontSize: '0.85rem',
+              border: '1px solid #e2e8f0',
+              fontStyle: 'italic'
+            }}>
+              Digitando resposta...
+            </div>
           </div>
-          <div style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '50%',
-            backgroundColor: '#e2e8f0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0
-          }}>
-            <User size={14} style={{ color: '#0f172a' }} />
-          </div>
-        </div>
-
-        {/* AI Message 2 */}
-        <div style={{
-          display: 'flex',
-          gap: '10px',
-          alignSelf: 'flex-start',
-          maxWidth: '85%'
-        }}>
-          <div style={{
-            width: '28px',
-            height: '28px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            border: '1px solid rgba(16, 185, 129, 0.3)'
-          }}>
-            <Bot size={14} style={{ color: '#10b981' }} />
-          </div>
-          <div style={{
-            backgroundColor: '#fff',
-            color: '#334155',
-            padding: '14px 16px',
-            borderRadius: '2px 16px 16px 16px',
-            fontSize: '0.85rem',
-            border: '1px solid #e2e8f0',
-            boxShadow: '0 2px 5px rgba(0,0,0,0.02)'
-          }}>
-            <p style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#0f172a', marginBottom: '6px' }}>
-              <CheckCircle2 size={14} style={{ color: '#10b981' }} /> Meta configurada!
-            </p>
-            <p style={{ margin: 0 }}>
-              Defini <strong>R$ 90,00</strong> semanais em Alimentação - Delivery. Eu te avisarei se o saldo restante chegar a 15%!
-            </p>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Input area mockup */}
+      {/* Suggested Questions Quick Select */}
       <div style={{
         padding: '14px 20px',
         borderTop: '1px solid #e2e8f0',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px'
+        backgroundColor: '#fff'
       }}>
-        <div style={{
-          flexGrow: 1,
-          backgroundColor: '#f1f5f9',
-          padding: '10px 16px',
-          borderRadius: '9999px',
-          fontSize: '0.8rem',
-          color: '#94a3b8',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <span>Pergunte algo sobre seu orçamento...</span>
+        <p style={{ fontSize: '0.7rem', fontWeight: 700, color: '#94a3b8', marginBottom: '8px', textTransform: 'uppercase' }}>
+          Pergunte ao Consultor (Clique para Testar):
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <button 
+            onClick={() => handleAskQuestion('delivery')}
+            disabled={isTyping}
+            style={{
+              padding: '6px 12px',
+              fontSize: '0.75rem',
+              borderRadius: '20px',
+              backgroundColor: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              cursor: isTyping ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+          >
+            🍔 Delivery
+          </button>
+          <button 
+            onClick={() => handleAskQuestion('reserva')}
+            disabled={isTyping}
+            style={{
+              padding: '6px 12px',
+              fontSize: '0.75rem',
+              borderRadius: '20px',
+              backgroundColor: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              cursor: isTyping ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+          >
+            🛡️ Reserva
+          </button>
+          <button 
+            onClick={() => handleAskQuestion('pfpj')}
+            disabled={isTyping}
+            style={{
+              padding: '6px 12px',
+              fontSize: '0.75rem',
+              borderRadius: '20px',
+              backgroundColor: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              cursor: isTyping ? 'not-allowed' : 'pointer',
+              fontWeight: 600,
+              transition: 'all 0.2s'
+            }}
+            onMouseOver={e => e.currentTarget.style.backgroundColor = '#e2e8f0'}
+            onMouseOut={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+          >
+            💼 Separar PF/PJ
+          </button>
         </div>
-        <button style={{
-          width: '36px',
-          height: '36px',
-          borderRadius: '50%',
-          backgroundColor: '#10b981',
-          border: 'none',
-          color: '#fff',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'not-allowed'
-        }}>
-          <Send size={14} />
-        </button>
       </div>
     </div>
   );
