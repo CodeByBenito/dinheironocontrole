@@ -25,8 +25,8 @@ const CustomTooltip = ({ active, payload, label }) => {
     return (
       <div className="chart-tooltip">
         <p style={{ fontWeight: 'bold', marginBottom: '4px' }}>{label}</p>
-        <p style={{ color: '#10b981' }}>Saldo: R$ {payload[0].value.toLocaleString('pt-BR')}</p>
-        {payload[1] && <p style={{ color: '#f59e0b' }}>Economias: R$ {payload[1].value.toLocaleString('pt-BR')}</p>}
+        <p style={{ color: '#34d399' }}>Saldo: R$ {payload[0].value.toLocaleString('pt-BR')}</p>
+        {payload[1] && <p style={{ color: '#fbbf24' }}>Economias: R$ {payload[1].value.toLocaleString('pt-BR')}</p>}
       </div>
     );
   }
@@ -37,9 +37,9 @@ export default function DashboardMockup() {
   const [timeframe, setTimeframe] = useState('monthly');
   const [chartData, setChartData] = useState(initialMonthlyData);
   const [transactions, setTransactions] = useState([
-    { category: 'Salário Principal', date: 'Hoje', val: 7500, type: 'in', color: '#10b981' },
-    { category: 'Supermercado CompreBem', date: 'Ontem', val: -412.50, type: 'out', color: '#ef4444' },
-    { category: 'Aporte de Investimentos', date: '08 de Jun', val: -1000, type: 'out', color: '#f59e0b' },
+    { category: 'Salário Principal', date: 'Hoje', val: 7500, type: 'in', color: '#34d399' },
+    { category: 'Supermercado CompreBem', date: 'Ontem', val: -412.50, type: 'out', color: '#f87171' },
+    { category: 'Aporte de Investimentos', date: '08 de Jun', val: -1000, type: 'out', color: '#fbbf24' },
   ]);
 
   // Form State
@@ -57,7 +57,7 @@ export default function DashboardMockup() {
     if (isNaN(numericVal)) return;
 
     const actualVal = type === 'in' ? numericVal : -numericVal;
-    const color = type === 'in' ? '#10b981' : '#ef4444';
+    const color = type === 'in' ? '#34d399' : '#f87171';
 
     const newTx = {
       category: desc,
@@ -196,7 +196,7 @@ export default function DashboardMockup() {
           <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
             R$ {currentJuneBalance.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
-          <span style={{ fontSize: '0.7rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
+          <span style={{ fontSize: '0.7rem', color: '#34d399', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
             <ArrowUpRight size={12} /> Saldo ativo simulado
           </span>
         </div>
@@ -214,7 +214,7 @@ export default function DashboardMockup() {
           <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
             R$ {currentJuneSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
-          <span style={{ fontSize: '0.7rem', color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
+          <span style={{ fontSize: '0.7rem', color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
             Economias estimadas
           </span>
         </div>
@@ -370,7 +370,7 @@ export default function DashboardMockup() {
             }}>
               <div>
                 <div style={{ fontWeight: 600, color: '#fff' }}>{t.category}</div>
-                <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Calendar size={10} /> {t.date}
                 </div>
               </div>

@@ -57,10 +57,21 @@ export default function App() {
     (bumps.crm ? bumpPrices.crm : 0);
 
   const toggleBump = (key) => {
-    setBumps(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
+    setBumps(prev => {
+      const nextVal = !prev[key];
+      if (nextVal) {
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.8 },
+          colors: ['#10b981', '#fbbf24', '#3b82f6']
+        });
+      }
+      return {
+        ...prev,
+        [key]: nextVal
+      };
+    });
   };
 
   const toggleFaq = (idx) => {
@@ -180,6 +191,22 @@ export default function App() {
                 Ver como funciona
               </button>
             </div>
+            <p className="hero-cta-microcopy" style={{ 
+              fontSize: '0.825rem', 
+              color: '#475569', 
+              marginTop: '-24px', 
+              marginBottom: '40px', 
+              fontWeight: 700, 
+              display: 'flex', 
+              gap: '12px', 
+              flexWrap: 'wrap' 
+            }}>
+              <span>⚡ Acesso Vitalício Imediato</span>
+              <span>•</span>
+              <span>🛡️ Garantia Blindada de 7 Dias</span>
+              <span>•</span>
+              <span>💳 Sem Mensalidades (Apenas R$ 47)</span>
+            </p>
             <div className="trust-indicators">
               <div className="trust-item">
                 <div className="trust-stars">
@@ -269,32 +296,32 @@ export default function App() {
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                  <div style={{ backgroundColor: '#d1fae5', color: '#10b981', padding: '6px', borderRadius: '8px' }}>
+                  <div style={{ backgroundColor: '#d1fae5', color: '#047857', padding: '6px', borderRadius: '8px' }}>
                     <Check size={18} />
                   </div>
                   <div>
                     <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '4px' }}>100% Amigável para Iniciantes</h4>
-                    <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Nenhum conhecimento prévio em finanças ou matemática é necessário.</p>
+                    <p style={{ fontSize: '0.9rem', color: '#475569' }}>Nenhum conhecimento prévio em finanças ou matemática é necessário.</p>
                   </div>
                 </div>
                 
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                  <div style={{ backgroundColor: '#d1fae5', color: '#10b981', padding: '6px', borderRadius: '8px' }}>
+                  <div style={{ backgroundColor: '#d1fae5', color: '#047857', padding: '6px', borderRadius: '8px' }}>
                     <Check size={18} />
                   </div>
                   <div>
                     <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '4px' }}>Orientado por Resultados Reais</h4>
-                    <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Foco total em fazer você economizar seus primeiros R$ 500 no primeiro mês.</p>
+                    <p style={{ fontSize: '0.9rem', color: '#475569' }}>Foco total em fazer você economizar seus primeiros R$ 500 no primeiro mês.</p>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                  <div style={{ backgroundColor: '#d1fae5', color: '#10b981', padding: '6px', borderRadius: '8px' }}>
+                  <div style={{ backgroundColor: '#d1fae5', color: '#047857', padding: '6px', borderRadius: '8px' }}>
                     <Check size={18} />
                   </div>
                   <div>
                     <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '4px' }}>Compra Protegida e Risco Zero</h4>
-                    <p style={{ fontSize: '0.9rem', color: '#64748b' }}>Acesso coberto por garantia de reembolso total nos primeiros 7 dias.</p>
+                    <p style={{ fontSize: '0.9rem', color: '#475569' }}>Acesso coberto por garantia de reembolso total nos primeiros 7 dias.</p>
                   </div>
                 </div>
               </div>
@@ -331,7 +358,7 @@ export default function App() {
                 backgroundColor: '#f8fafc',
                 borderRadius: '8px',
                 fontSize: '0.85rem',
-                color: '#10b981',
+                color: '#047857', /* High contrast emerald green */
                 fontWeight: 700,
                 border: '1px solid #e2e8f0',
                 display: 'inline-block'
@@ -361,7 +388,7 @@ export default function App() {
               <p className="card-description">
                 Simuladores interativos para cálculo de juros compostos, quitação acelerada de dívidas e simulação de financiamentos sem pegadinhas.
               </p>
-              <div style={{ marginTop: '16px', fontSize: '0.8rem', color: '#059669', fontWeight: 600 }}>
+              <div style={{ marginTop: '16px', fontSize: '0.8rem', color: '#047857', fontWeight: 700 }}>
                 📈 Simulações em 3 cliques
               </div>
             </div>
@@ -380,7 +407,7 @@ export default function App() {
                 backgroundColor: '#f8fafc',
                 borderRadius: '8px',
                 fontSize: '0.85rem',
-                color: '#10b981',
+                color: '#047857', /* High contrast emerald green */
                 fontWeight: 700,
                 border: '1px solid #e2e8f0',
                 display: 'inline-block'
@@ -397,7 +424,7 @@ export default function App() {
               <p className="card-description">
                 Receba relatórios automatizados fáceis de entender, mostrando tendências de gastos mensais e indicando quais categorias estão estourando o seu orçamento.
               </p>
-              <div style={{ marginTop: '16px', fontSize: '0.8rem', color: '#059669', fontWeight: 600 }}>
+              <div style={{ marginTop: '16px', fontSize: '0.8rem', color: '#047857', fontWeight: 700 }}>
                 📊 Exportável para PDF e Excel
               </div>
             </div>
@@ -557,12 +584,17 @@ export default function App() {
               <div className="stack-price-installment">
                 Ou em até 5x de R$ 10,15 no cartão de crédito
               </div>
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', color: '#d97706', fontSize: '0.85rem', fontWeight: 700, marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', color: '#78350f', fontSize: '0.85rem', fontWeight: 800, marginBottom: '16px' }}>
                 🛡️ Garantia Blindada de Satisfação de 7 dias inclusa!
               </div>
               <button onClick={handleOpenCheckout} className="btn btn-primary btn-block">
                 QUERO MEU ACESSO AGORA COM DESCONTO
               </button>
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', marginTop: '16px', fontSize: '0.8rem', color: '#475569', fontWeight: 600 }}>
+                <span>🔒 Transação 100% Criptografada</span>
+                <span>•</span>
+                <span>⚡ Liberação Imediata via PIX</span>
+              </div>
             </div>
           </div>
         </div>
@@ -679,7 +711,7 @@ export default function App() {
               <p style={{ fontSize: '0.9rem', color: '#64748b' }}>
                 Acesso vitalício ao sistema completo com painéis, calculadoras, consultor financeiro de IA e atualizações gratuitas inclusas.
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#d97706', marginTop: '12px', fontWeight: 700 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', color: '#78350f', marginTop: '12px', fontWeight: 800 }}>
                 🛡️ Garantia incondicional de reembolso por 7 dias
               </div>
             </div>
@@ -754,13 +786,13 @@ export default function App() {
                 <span>R$ 47,00</span>
               </div>
               {bumps.casal && (
-                <div className="checkout-summary-row" style={{ color: '#059669' }}>
+                <div className="checkout-summary-row" style={{ color: '#047857', fontWeight: 600 }}>
                   <span>+ Versão Casal / Família</span>
                   <span>R$ 19,00</span>
                 </div>
               )}
               {bumps.mei && (
-                <div className="checkout-summary-row" style={{ color: '#059669' }}>
+                <div className="checkout-summary-row" style={{ color: '#047857', fontWeight: 600 }}>
                   <span>+ Versão Autônomo / MEI</span>
                   <span>R$ 27,00</span>
                 </div>
@@ -813,10 +845,10 @@ export default function App() {
                 <circle cx="50" cy="50" r="45" fill="url(#goldGradient)" stroke="#b45309" strokeWidth="2" />
                 <circle cx="50" cy="50" r="38" fill="none" stroke="#fff" strokeWidth="1.5" strokeDasharray="3 3" opacity="0.6" />
                 <path d="M50 20 L58 38 L78 38 L62 50 L68 70 L50 58 L32 70 L38 50 L22 38 L42 38 Z" fill="#fff" />
-                <text x="50" y="80" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="800" fontFamily="sans-serif">
+                <text x="50" y="80" textAnchor="middle" fill="#451a03" fontSize="8" fontWeight="800" fontFamily="sans-serif">
                   7 DIAS
                 </text>
-                <text x="50" y="15" textAnchor="middle" fill="#5b21b6" fontSize="6" fontWeight="800" fontFamily="sans-serif" letterSpacing="0.5">
+                <text x="50" y="18" textAnchor="middle" fill="#451a03" fontSize="6" fontWeight="800" fontFamily="sans-serif" letterSpacing="0.5">
                   GARANTIA
                 </text>
               </svg>

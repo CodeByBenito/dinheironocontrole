@@ -11,7 +11,7 @@
   --accent-light: #fef3c7;   /* Light Gold BG */
   --text-main: #334155;      /* Slate 700 */
   --text-dark: #0f172a;      /* Slate 900 */
-  --text-muted: #64748b;     /* Slate 500 */
+  --text-muted: #475569;     /* Slate 600 - High Contrast */
   --bg-white: #ffffff;
   --bg-light: #f8fafc;       /* Slate 50 */
   --bg-alt: #f1f5f9;         /* Slate 100 */
@@ -163,8 +163,27 @@ section {
 
 .btn-primary {
   background-color: var(--secondary);
-  color: var(--bg-white);
+  color: var(--primary-dark);
   box-shadow: var(--shadow-primary);
+  font-weight: 800;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+}
+
+.btn-primary:hover::after {
+  transform: translateX(100%);
+  transition: transform 0.6s ease;
 }
 
 .btn-primary:hover {
@@ -235,8 +254,8 @@ section {
   gap: 8px;
   padding: 8px 16px;
   background-color: rgba(16, 185, 129, 0.1);
-  color: var(--secondary);
-  font-weight: 600;
+  color: #047857; /* High contrast green */
+  font-weight: 700;
   font-size: 0.85rem;
   border-radius: 9999px;
   margin-bottom: 24px;
@@ -486,7 +505,7 @@ section {
   height: 48px;
   border-radius: 50%;
   background-color: var(--secondary);
-  color: var(--bg-white);
+  color: var(--primary-dark);
   font-weight: 800;
   font-size: 1.25rem;
   display: flex;
@@ -595,7 +614,7 @@ section {
 
 .stack-price-installment {
   font-size: 0.95rem;
-  color: var(--secondary);
+  color: #047857; /* High contrast green (5.8:1) */
   font-weight: 700;
   margin-bottom: 24px;
 }
@@ -661,7 +680,7 @@ section {
   margin-top: 8px;
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--secondary);
+  color: #047857; /* High contrast green (5.8:1) */
   display: flex;
   align-items: center;
   gap: 4px;
@@ -679,7 +698,7 @@ section {
   padding: 20px;
   margin-bottom: 16px;
   background-color: var(--bg-white);
-  transition: var(--transition);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   display: flex;
   gap: 16px;
@@ -689,12 +708,19 @@ section {
 
 .order-bump-box:hover {
   border-color: var(--border-focus);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.order-bump-box:active {
+  transform: scale(0.99) translateY(0);
 }
 
 .order-bump-box.selected {
   border-color: var(--secondary);
-  background-color: rgba(16, 185, 129, 0.03);
+  background-color: rgba(16, 185, 129, 0.05);
+  box-shadow: 0 4px 20px -5px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px) scale(1.01);
 }
 
 .order-bump-box.featured {
@@ -704,7 +730,9 @@ section {
 
 .order-bump-box.featured.selected {
   border: 2px solid var(--secondary);
-  background-color: rgba(16, 185, 129, 0.03);
+  background-color: rgba(16, 185, 129, 0.05);
+  box-shadow: 0 4px 20px -5px rgba(16, 185, 129, 0.15);
+  transform: translateY(-2px) scale(1.01);
 }
 
 .order-bump-checkbox {
@@ -759,7 +787,7 @@ section {
 .order-bump-price {
   font-weight: 800;
   font-size: 1rem;
-  color: var(--secondary);
+  color: #047857; /* High contrast green */
 }
 
 .order-bump-description {
@@ -795,7 +823,7 @@ section {
 }
 
 .checkout-summary-total-val {
-  color: var(--secondary);
+  color: #047857; /* High contrast green */
 }
 
 /* FAQ Accordion */
@@ -1054,10 +1082,13 @@ header {
     gap: 24px;
     font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--text-main);
+  }
+  .nav-link {
+    transition: var(--transition);
   }
   .nav-link:hover {
-    color: var(--text-dark);
+    color: var(--secondary-hover);
   }
 }
 
@@ -1162,5 +1193,14 @@ header {
 @media (max-width: 767px) {
   body {
     padding-bottom: 90px;
+  }
+}
+
+.hero-cta-microcopy {
+  justify-content: center;
+}
+@media (min-width: 1024px) {
+  .hero-cta-microcopy {
+    justify-content: flex-start;
   }
 }

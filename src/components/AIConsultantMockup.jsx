@@ -24,7 +24,7 @@ const presetConversations = {
             <li>Substitua os outros jantares por compras planejadas de mercado.</li>
           </ul>
         </div>
-        <p style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981', fontWeight: 600, fontSize: '0.8rem', margin: 0 }}>
+        <p style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#047857', fontWeight: 700, fontSize: '0.8rem', margin: 0 }}>
           <CheckCircle2 size={14} /> Economia esperada: R$ 320,00/mês.
         </p>
       </div>
@@ -305,8 +305,8 @@ export default function AIConsultantMockup() {
               fontWeight: 600,
               transition: 'all 0.2s'
             }}
-            onMouseOver={e => e.currentTarget.style.backgroundColor = '#e2e8f0'}
-            onMouseOut={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+            onMouseOver={e => { e.currentTarget.style.backgroundColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+            onMouseOut={e => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           >
             🍔 Delivery
           </button>
@@ -324,8 +324,8 @@ export default function AIConsultantMockup() {
               fontWeight: 600,
               transition: 'all 0.2s'
             }}
-            onMouseOver={e => e.currentTarget.style.backgroundColor = '#e2e8f0'}
-            onMouseOut={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+            onMouseOver={e => { e.currentTarget.style.backgroundColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+            onMouseOut={e => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           >
             🛡️ Reserva
           </button>
@@ -343,8 +343,8 @@ export default function AIConsultantMockup() {
               fontWeight: 600,
               transition: 'all 0.2s'
             }}
-            onMouseOver={e => e.currentTarget.style.backgroundColor = '#e2e8f0'}
-            onMouseOut={e => e.currentTarget.style.backgroundColor = '#f1f5f9'}
+            onMouseOver={e => { e.currentTarget.style.backgroundColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
+            onMouseOut={e => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           >
             💼 Separar PF/PJ
           </button>
