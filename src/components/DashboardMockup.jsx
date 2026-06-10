@@ -193,7 +193,7 @@ export default function DashboardMockup() {
             <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Saldo Atual</span>
             <Wallet size={16} style={{ color: '#10b981' }} />
           </div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>
             R$ {currentJuneBalance.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
           <span style={{ fontSize: '0.7rem', color: '#34d399', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
@@ -211,7 +211,7 @@ export default function DashboardMockup() {
             <span style={{ fontSize: '0.75rem', color: '#94a3b8', fontWeight: 600 }}>Economias acumuladas</span>
             <ShieldCheck size={16} style={{ color: '#f59e0b' }} />
           </div>
-          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0 }}>
+          <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: 0, color: '#ffffff' }}>
             R$ {currentJuneSavings.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </h3>
           <span style={{ fontSize: '0.7rem', color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '2px', marginTop: '4px' }}>
