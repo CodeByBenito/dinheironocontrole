@@ -58,30 +58,31 @@ const presetConversations = {
       </div>
     )
   },
-  pfpj: {
-    question: 'Como separar contas Pessoais e Profissionais?',
+  dividas: {
+    question: 'Como quitar minhas dívidas rápido?',
     response: (
       <div>
         <p style={{ fontWeight: 600, color: '#0f172a', marginBottom: '8px' }}>
-          Gestão PF vs PJ para Autônomos 💼
+          Estratégia de Quitação Acelerada 📈
         </p>
         <p style={{ marginBottom: '8px' }}>
-          Misturar o caixa pessoal e empresarial é a principal causa da mortalidade de pequenas empresas.
+          Para sair das dívidas rapidamente, siga o método de aceleração com foco na redução de juros:
         </p>
         <div style={{
           backgroundColor: '#f1f5f9',
           padding: '10px',
           borderRadius: '8px',
           marginBottom: '10px',
-          borderLeft: '3px solid #3b82f6'
+          borderLeft: '3px solid #ef4444'
         }}>
           <ul style={{ paddingLeft: '16px', margin: 0, fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            <li>Defina um salário mensal fixo (Pró-labore).</li>
-            <li>Use contas bancárias separadas para pagamentos de clientes e boletos da casa.</li>
+            <li>Liste todas as dívidas e ordene-as pelas maiores taxas de juros.</li>
+            <li>Use nossas Calculadoras Financeiras para simular o impacto de aportes extras mensais.</li>
+            <li>Negocie descontos para pagamentos à vista da principal dívida ativa.</li>
           </ul>
         </div>
         <p style={{ fontSize: '0.8rem', margin: 0 }}>
-          💡 Nosso parceiro <strong>CRM Signature</strong> possui módulos de separação perfeitos para gerenciar isso!
+          💡 No <strong>Dinheiro no Controle™</strong>, você pode usar os simuladores de amortização para ver o quanto economiza em juros a cada parcela adiantada!
         </p>
       </div>
     )
@@ -330,7 +331,7 @@ export default function AIConsultantMockup() {
             🛡️ Reserva
           </button>
           <button 
-            onClick={() => handleAskQuestion('pfpj')}
+            onClick={() => handleAskQuestion('dividas')}
             disabled={isTyping}
             style={{
               padding: '6px 12px',
@@ -346,7 +347,7 @@ export default function AIConsultantMockup() {
             onMouseOver={e => { e.currentTarget.style.backgroundColor = '#e2e8f0'; e.currentTarget.style.color = '#0f172a'; }}
             onMouseOut={e => { e.currentTarget.style.backgroundColor = '#f1f5f9'; e.currentTarget.style.color = '#475569'; }}
           >
-            💼 Separar PF/PJ
+            💳 Quitar Dívidas
           </button>
         </div>
       </div>
